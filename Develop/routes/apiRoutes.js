@@ -1,11 +1,12 @@
 //Load data by linking routes
-var notes = require('../db/db');
+var path = require('path');
+var data = require('../db/db.json');
 
 //Routing
 module.exports = function(app) {
   //API GET Routes
   app.get('/api/notes', function(req, res) {
-    res.json(notes);
+    res.json(data);
   });
 
   // If no matching route is found default to home
