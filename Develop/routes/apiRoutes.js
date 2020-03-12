@@ -13,4 +13,16 @@ module.exports = function(app) {
   app.get('*', function(req, res) {
     res.sendFile(path.join(__dirname, '../public/index.html'));
   });
+
+  // API POST Request
+  app.post('/api/notes', function(req, res) {
+    data.push(req.body);
+    res.json(true);
+  });
+
+  app.post('/api/clear', function(req, res) {
+    data.length = 0;
+
+    res.join({ ok: true });
+  });
 };
