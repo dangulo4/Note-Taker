@@ -5,14 +5,35 @@ var data = require('../db/db.json');
 //Routing
 module.exports = function(app) {
   //API GET Routes
+  // app.get('/api/notes', function(req, res) {
+  //   res.json(data);
+  // });
+
+  //API GET Routes
   app.get('/api/notes', function(req, res) {
-    res.json(data);
+    //Read the JSON file
+    fs.readFile('./db/db.json', 'utf8', (err, notes) => {
+      if (err) throw err;
+      let parsedNotes;
+      // If notes isn't an array or can't be turned into one, send back a new empty array
+      try {
+        parsedNotes = [].concat(JSON.parse(notes));
+      } catch (err) {
+        parsedNotes = [];
+      }
+      // return parsedNotes;
+      res.json(parsedNotes);
+    });
   });
 
   // API POST Request -- need to add to file research
   app.post('/api/notes/', function(req, res) {
     data.push(req.body);
-    res.json({ success: true, msg: 'Created new note' });
+    fs.writeFile('./db/db.json', JSON.stringify(data, null, 2), err => {
+      if (err) throw err;
+      res.json(data);
+      console.log('Note Added!');
+    });
   });
 
   // app.delete('/api/notes/:id', (req, res) => {
