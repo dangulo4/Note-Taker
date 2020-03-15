@@ -1,6 +1,6 @@
 //Load data by linking routes
 const fs = require('fs');
-var data = require('../db/db.json');
+const data = require('../db/db.json');
 
 //Routing
 module.exports = function(app) {
@@ -26,22 +26,6 @@ module.exports = function(app) {
     });
   });
 
-  // API POST Request -- need to add to file research
-  app.post('/api/notes/', function(req, res) {
-    data.push(req.body);
-    fs.writeFile('./db/db.json', JSON.stringify(data, null, 2), err => {
-      if (err) throw err;
-      res.json(data);
-      console.log('Note Added!');
-    });
-  });
-
-  // app.delete('/api/notes/:id', (req, res) => {
-  //   data.length = 0;
-
-  //   res.json({ ok: true, msg: `Delete bootcamp ${req.params.id}` });
-  // });
-
   // DELETE "/api/notes" deletes the note with an id equal to req.params.id
   app.delete('/api/notes/:id', (req, res) => {
     let noteId = req.params.id;
@@ -55,10 +39,28 @@ module.exports = function(app) {
         JSON.stringify(newAllNotes, null, 2),
         err => {
           if (err) throw err;
-          res.json(data);
+          res.json(true);
           console.log('Note deleted!');
         }
       );
+    });
+  });
+
+  // API POST Request -- need to add to file research
+  app.post('/api/notes/', function(req, res) {
+    console.log(data, 'New Note', req.body);
+    //Read the JSON file
+    fs.readFile('./db/db.json', 'utf8', (err, response) => {
+      //convert the response to JSON
+      let allNotes = JSON.parse(response);
+      console.log('NN', req.body, allNotes);
+      allNotes.push(req.body);
+      //Update the file with new note info
+      fs.writeFile('./db/db.json', JSON.stringify(allNotes), err => {
+        if (err) throw err;
+        res.json(allNotes);
+        console.log('Note Added!', allNotes);
+      });
     });
   });
 };
