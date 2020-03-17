@@ -5,11 +5,6 @@ const data = require('../db/db.json');
 //Routing
 module.exports = function(app) {
   //API GET Routes
-  // app.get('/api/notes', function(req, res) {
-  //   res.json(data);
-  // });
-
-  //API GET Routes
   app.get('/api/notes', function(req, res) {
     //Read the JSON file
     fs.readFile('./db/db.json', 'utf8', (err, notes) => {
@@ -21,7 +16,6 @@ module.exports = function(app) {
       } catch (err) {
         parsedNotes = [];
       }
-      // return parsedNotes;
       res.json(parsedNotes);
     });
   });
@@ -48,18 +42,29 @@ module.exports = function(app) {
 
   // API POST Request -- need to add to file research
   app.post('/api/notes/', function(req, res) {
-    console.log(data, 'New Note', req.body);
+    // console.log(data, 'New Note', req.body);
+
     //Read the JSON file
     fs.readFile('./db/db.json', 'utf8', (err, response) => {
       //convert the response to JSON
       let allNotes = JSON.parse(response);
-      console.log('NN', req.body, allNotes);
-      allNotes.push(req.body);
+      // console.log('NN', req.body, allNotes);
+
+      //GRAB ID OF THE LAST ELEMENT FROM THE JSON FILE
+      var lastNoteId = allNotes[allNotes.length - 1].id;
+      lastNoteId = lastNoteId + 1;
+      console.log(lastNoteId);
+
+      //Append the new id to the user created note
+      const newNote = { ...req.body, id: lastNoteId };
+      console.log('Thew new note is: ', newNote);
+      allNotes = [...allNotes, newNote];
+      console.log('Updated List with new id: ', allNotes);
       //Update the file with new note info
       fs.writeFile('./db/db.json', JSON.stringify(allNotes), err => {
         if (err) throw err;
         res.json(allNotes);
-        console.log('Note Added!', allNotes);
+        // console.log('Note Added!', allNotes);
       });
     });
   });
